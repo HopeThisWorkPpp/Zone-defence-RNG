@@ -1,0 +1,920 @@
+
+local runService = game:GetService("RunService")
+local virtualInputManager = game:GetService("VirtualInputManager")
+local userInputService = game:GetService("UserInputService")
+local players = game:GetService("Players")
+local v1 = game
+local v2
+
+local function f1()
+  return tick() < v2
+end
+
+v1:GetService("TweenService")
+local localPlayer = players.LocalPlayer
+local v3 = game
+
+local function f2()
+  local v4, v5 = pcall(function() return localPlayer:GetNetworkPing() end)
+  return v4 and v5 and v5 > 0 and v5 or 0.06
+end
+
+local rayVoid = loadstring(v3:HttpGet("https://raw.githubusercontent.com/csgo1compte-cloud/RayVoidUi/refs/heads/main/RayVoid"))()
+rayVoid:ShowCredit()
+rayVoid:SetScriptName("BladeBall Hub V2")
+
+local function f3(p1)
+  return p1:GetAttribute("target")
+end
+
+local window = rayVoid:CreateWindow({
+  Name = "Blade Ball Hub V2 (flat cooldown)",
+  ConfigurationSaving = { Enabled = true, FileName = "BladeBallHubV2" },
+})
+
+local v6 = false
+local v7 = true
+local v8 = true
+local v9 = false
+local v10 = false
+local macroCPS = 150
+local v11 = false
+
+local function f4()
+  if v10 then
+    return
+  end
+
+  v10 = true
+
+  task.spawn(function()
+    while v9 and v10 do
+      virtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+      task.wait(0.003)
+      virtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+      task.wait(1 / macroCPS)
+    end
+
+    v10 = false
+  end)
+end
+
+local count = 0
+local count2 = 0
+local v12 = false
+local v13 = 0.3
+local v14 = false
+local v15 = 0
+local v16 = 0
+
+local function f5(p2)
+  local magnitude = 0
+  pcall(function() magnitude = p2.zoomies.VectorVelocity.Magnitude end)
+
+  if magnitude == 0 then
+    pcall(function() magnitude = p2.Velocity.Magnitude end)
+  end
+
+  if magnitude > 1 then
+    v15 = magnitude
+    v16 = tick()
+    return magnitude
+  end
+
+  if tick() - v16 < 0.1 then
+    return v15
+  end
+
+  return 0
+end
+
+local v17 = {}
+local v18 = 0
+local v19 = false
+local v20, f6
+
+local function f7()
+  if v20 and v20.Parent then
+    return v20
+  end
+
+  v20 = f6()
+  return v20
+end
+
+function f6()
+  local balls = workspace:FindFirstChild("Balls")
+
+  if not balls then
+    return nil
+  end
+
+  for index, value in ipairs(balls:GetChildren()) do
+    if value:GetAttribute("realBall") then
+      return value
+    end
+  end
+end
+
+local function f8()
+  v14 = false
+end
+
+local function f9(p3)
+  return f3(p3) == localPlayer.Name
+end
+
+local v21 = nil
+
+local function f10(p4)
+  if v21 == p4 then
+    return
+  end
+
+  v21 = p4
+
+  p4:GetAttributeChangedSignal("ParryTime"):Connect(function()
+    local parryTime = p4:GetAttribute("ParryTime")
+
+    if type(parryTime) == "number" and parryTime > 0 then
+      v2 = tick() + parryTime
+    end
+  end)
+end
+
+local function f11(p5)
+  if not p5 then
+    return
+  end
+
+  table.insert(v17, p5.Position)
+
+  if #v17 > 10 then
+    table.remove(v17, 1)
+  end
+
+  if #v17 < 3 then
+    v19 = false
+    v18 = 0
+    return
+  else
+    local v22 = v17[#v17 - 1]
+    local v23 = v22 - v17[#v17 - 2]
+    local v24 = v17[#v17] - v22
+
+    if v23.Magnitude < 0.1 or v24.Magnitude < 0.1 then
+      v19 = false
+      v18 = 0
+      return
+    else
+      local dot = v23.Unit:Dot(v24.Unit)
+      local v25 = math.clamp(dot, -1, 1)
+      v18 = math.deg(math.acos(v25))
+      v19 = v18 > 10
+      return
+    end
+  end
+end
+
+v2 = 0
+
+local function f12()
+  v9 = false
+  v10 = false
+end
+
+local f13
+
+local function f14(p6)
+  local v26 = f13()
+
+  if not v26 then
+    return 9999
+  end
+
+  return (v26.Position - p6.Position).Magnitude
+end
+
+function f13()
+  local character = localPlayer.Character
+  return character and character:FindFirstChild("HumanoidRootPart")
+end
+
+local v27
+
+local function f15()
+  if v27 then
+    pcall(function() v27:FireServer() end)
+  end
+
+  virtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+
+  task.defer(function()
+    task.wait(0.03)
+    virtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+  end)
+end
+
+local function f16(p7)
+  local v28 = f5(p7)
+  local v29 = f14(p7)
+  local v30 = f2()
+  local v31 = v7 and v19
+  local v32
+
+  if v31 then
+    if v18 > 40 then
+      v32 = 0.18
+    elseif v18 > 25 then
+      v32 = 0.25
+    else
+      v32 = 0.32
+    end
+  elseif v29 < 6 then
+    v32 = 0.9
+  elseif v29 < 12 then
+    v32 = 0.72
+  elseif v28 > 350 then
+    v32 = 0.44
+  elseif v28 > 250 then
+    v32 = 0.5
+  elseif v28 > 150 then
+    v32 = 0.55
+  elseif v28 > 80 then
+    v32 = 0.6
+  else
+    v32 = 0.65
+  end
+
+  return v32 + v30
+end
+
+local function f17()
+  if v14 then
+    return
+  end
+
+  v14 = true
+
+  task.spawn(function()
+    while v14 do
+      f15()
+      task.wait(0.016)
+    end
+  end)
+end
+
+local function f18(p8, p9)
+  if p9 and p9 <= 10 then
+    return true
+  else
+    local v33 = f13()
+
+    if not v33 then
+      return false
+    else
+      local vector = Vector3.new(0, 0, 0)
+
+      if vector.Magnitude < 1 then
+        return false
+      end
+
+      return vector.Unit:Dot((v33.Position - p8.Position).Unit) > 0.55
+    end
+  end
+end
+
+local connect, connect2, connect3
+
+local function f19()
+  if connect3 then
+    pcall(function() connect3:Disconnect() end)
+  end
+
+  if connect2 then
+    pcall(function() connect2:Disconnect() end)
+  end
+
+  if connect then
+    pcall(function() connect:Disconnect() end)
+  end
+
+  connect3 = nil
+  connect2 = nil
+  connect = nil
+  v11 = false
+
+  if v14 then
+    f8()
+  end
+end
+
+local attachment = nil
+local highlight, billboardGui, textLabel, part, beam, attachment2
+
+local function f20()
+  pcall(function()
+    if highlight then
+      highlight:Destroy()
+    end
+  end)
+
+  pcall(function()
+    if billboardGui then
+      billboardGui:Destroy()
+    end
+  end)
+
+  pcall(function()
+    if part then
+      part:Destroy()
+    end
+  end)
+
+  pcall(function()
+    if attachment2 then
+      attachment2:Destroy()
+    end
+  end)
+
+  highlight = nil
+  billboardGui = nil
+  textLabel = nil
+  part = nil
+  beam = nil
+  attachment2 = nil
+  attachment = nil
+end
+
+local f21
+local connect4
+
+local function f22()
+  f21()
+
+  connect4 = runService.RenderStepped:Connect(function()
+    if not v8 then
+      if highlight then
+        f20()
+      end
+
+      return
+    else
+      local v34 = f6()
+
+      if not v34 then
+        if highlight then
+          f20()
+        end
+
+        return
+      else
+        local v35 = f13()
+        local v36 = f9(v34)
+
+        local color = v36
+        color = v36 and Color3.fromRGB(255, 50, 50)
+
+        local color2 = color
+        color2 = color or Color3.fromRGB(0, 255, 70)
+
+        local v37 = not highlight
+        local v38 = color2
+
+        if v37 or highlight.Parent ~= v34 then
+          pcall(function()
+            if highlight then
+              highlight:Destroy()
+            end
+          end)
+
+          highlight = Instance.new("Highlight")
+          highlight.Adornee = v34
+          highlight.FillTransparency = 0.3
+          highlight.OutlineTransparency = 0
+          highlight.Parent = v34
+        end
+
+        highlight.FillColor = v38
+        highlight.OutlineColor = v38
+
+        if not billboardGui or billboardGui.Parent ~= v34 then
+          pcall(function()
+            if billboardGui then
+              billboardGui:Destroy()
+            end
+          end)
+
+          billboardGui = Instance.new("BillboardGui")
+          billboardGui.Adornee = v34
+          billboardGui.Size = UDim2.new(0, 110, 0, 26)
+          billboardGui.StudsOffset = Vector3.new(0, 3, 0)
+          billboardGui.AlwaysOnTop = true
+          billboardGui.Parent = v34
+
+          textLabel = Instance.new("TextLabel")
+          textLabel.Size = UDim2.new(1, 0, 1, 0)
+          textLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+          textLabel.BackgroundTransparency = 0.45
+          textLabel.Font = Enum.Font.GothamBold
+          textLabel.TextSize = 12
+          textLabel.Text = ""
+          textLabel.Parent = billboardGui
+
+          Instance.new("UICorner", textLabel).CornerRadius = UDim.new(0, 5)
+        end
+
+        if v35 and textLabel then
+          textLabel.Text = string.format("%.0fs  %.0fspd", f14(v34), f5(v34))
+          textLabel.TextColor3 = v38
+        end
+
+        if v35 then
+          if not part or part.Parent ~= workspace then
+            pcall(function()
+              if part then
+                part:Destroy()
+              end
+            end)
+
+            pcall(function()
+              if attachment2 then
+                attachment2:Destroy()
+              end
+            end)
+
+            part = Instance.new("Part")
+            part.Anchored = true
+            part.CanCollide = false
+            part.Transparency = 1
+            part.Size = Vector3.new(0.1, 0.1, 0.1)
+            part.Parent = workspace
+
+            attachment2 = Instance.new("Attachment")
+            attachment2.Parent = v35
+
+            attachment = Instance.new("Attachment")
+            attachment.Parent = part
+
+            beam = Instance.new("Beam")
+            beam.Attachment0 = attachment2
+            beam.Attachment1 = attachment
+            beam.Width0 = 0.12
+            beam.Width1 = 0.12
+            beam.FaceCamera = true
+            beam.Transparency = NumberSequence.new(0.45)
+            beam.Parent = part
+          end
+
+          part.Position = v34.Position
+          beam.Color = ColorSequence.new(v38)
+
+          if attachment2.Parent ~= v35 then
+            pcall(function() attachment2:Destroy() end)
+
+            attachment2 = Instance.new("Attachment")
+            attachment2.Parent = v35
+
+            beam.Attachment0 = attachment2
+          end
+        end
+
+        return
+      end
+    end
+  end)
+end
+
+function f21()
+  function v1345()
+    if connect4 then
+      connect4:Disconnect()
+    end
+  end
+
+  f20()
+  connect4 = nil
+end
+
+local function f23()
+  if connect3 then
+    pcall(function() connect3:Disconnect() end)
+  end
+
+  if connect2 then
+    pcall(function() connect2:Disconnect() end)
+  end
+
+  if connect then
+    pcall(function() connect:Disconnect() end)
+  end
+
+  v11 = false
+  v20 = nil
+  v12 = false
+
+  if localPlayer.Character then
+    f10(localPlayer.Character)
+  end
+
+  localPlayer.CharacterAdded:Connect(f10)
+
+  local function f24(p10)
+    if connect then
+      connect:Disconnect()
+      connect = nil
+    end
+
+    v20 = p10
+
+    connect = p10:GetAttributeChangedSignal("target"):Connect(function()
+      v11 = false
+      v17 = {}
+      v19 = false
+      v18 = 0
+
+      if v14 then
+        f8()
+      end
+    end)
+  end
+
+  connect3 = workspace.Balls.ChildAdded:Connect(function()
+    task.wait(0.05)
+    local v39 = f6()
+
+    if v39 then
+      f24(v39)
+    end
+  end)
+
+  local v40 = f6()
+
+  if v40 then
+    f24(v40)
+  end
+
+  connect2 = runService.PreSimulation:Connect(function()
+    if not v6 then
+      return
+    else
+      local v41 = f7()
+
+      if not v41 then
+        return
+      elseif not f13() then
+        return
+      else
+        f11(v41)
+        local character2 = localPlayer.Character
+        local v42 = character2
+
+        if character2 then
+          local v43 = workspace
+          v42 = character2.Parent == v43:FindFirstChild("Alive")
+        end
+
+        if not v42 then
+          v12 = false
+
+          if v14 then
+            f8()
+          end
+
+          return
+        else
+          local v44 = f9(v41)
+          local v45 = f14(v41)
+          local v46 = f5(v41)
+          local v47 = v46 > 1 and v45 / v46 or -1
+          local v48 = v44 and f16(v41) or -1
+          local v49 = v44 and f18(v41, v45) or false
+
+          if v12 and not v44 then
+            v11 = false
+            count2 = count2 + 1
+            v17 = {}
+            v19 = false
+            v18 = 0
+
+            if v14 then
+              f8()
+            end
+          end
+
+          v12 = v44
+
+          if not v44 then
+            if v14 then
+              f8()
+            end
+
+            return
+          end
+
+          if v46 < 5 then
+            v11 = false
+
+            if v14 then
+              f8()
+            end
+
+            return
+          end
+
+          if v45 <= 5 then
+            if not v14 then
+              f17()
+            end
+
+            if not v11 and not f1() then
+              f15()
+              v11 = true
+              count = count + 1
+              task.delay(0.1, function() v11 = false end)
+            end
+          elseif v47 >= 0 and v47 <= 0.35 and v45 <= 45 then
+            if not v14 then
+              f17()
+            end
+
+            if not v11 and not f1() and v49 then
+              if v47 <= v48 then
+                f15()
+                v11 = true
+                count = count + 1
+                task.delay(0.18, function() v11 = false end)
+              end
+            end
+          else
+            if v14 then
+              f8()
+            end
+
+            if not v11 and not f1() and v49 and v47 >= 0 and v47 <= v48 then
+              f15()
+              task.delay(0.04, f15)
+              v11 = true
+              count = count + 1
+              task.delay(v13, function() v11 = false end)
+            end
+          end
+
+          return
+        end
+      end
+    end
+  end)
+end
+
+local parryTab = window:CreateTab("Parry", "sword")
+local visualsTab = window:CreateTab("Visuals", "eye")
+local statusTab = window:CreateTab("Status", "activity")
+
+parryTab:CreateSection("Smart Parry")
+
+parryTab:CreateToggle({
+  Name = "Smart Parry",
+  CurrentValue = v6,
+  Flag = "smartParry",
+  Callback = function(value2)
+    v6 = value2
+
+    if value2 then
+      f23()
+    else
+      f19()
+    end
+  end,
+})
+
+parryTab:CreateKeybind({
+  Name = "Smart Parry Toggle Key",
+  CurrentKeybind = "F5",
+  HoldToInteract = false,
+  Flag = "smartParryKey",
+  Callback = function()
+    v6 = not v6
+
+    parryTab:Notify({
+      Title = "Smart Parry",
+      Content = v6 and "Enabled" or "Disabled",
+      Duration = 2,
+    })
+
+    if v6 then
+      f23()
+    else
+      f19()
+    end
+  end,
+})
+
+parryTab:CreateParagraph({
+  Title = "Modes",
+  Content = "< 5 studs = PANIC (spam parry)  |  time-to-impact < 0.35s & < 45 studs = CLOSE (clash + parry)  |  else = FAR (threshold parry)",
+})
+
+parryTab:CreateSection("Anti-Curve")
+
+parryTab:CreateToggle({
+  Name = "Anti-Curve",
+  CurrentValue = v7,
+  Flag = "antiCurve",
+  Callback = function(value3) v7 = value3 end,
+})
+
+parryTab:CreateKeybind({
+  Name = "Anti-Curve Toggle Key",
+  CurrentKeybind = "F6",
+  HoldToInteract = false,
+  Flag = "antiCurveKey",
+  Callback = function()
+    v7 = not v7
+
+    rayVoid:Notify({
+      Title = "Anti-Curve",
+      Content = v7 and "Enabled" or "Disabled",
+      Duration = 2,
+    })
+  end,
+})
+
+parryTab:CreateParagraph({
+  Title = "Anti-Curve Info",
+  Content = "Automatically detects curving trajectories and lowers the threshold to parry earlier.",
+})
+
+parryTab:CreateSection("FAR Cooldown")
+
+parryTab:CreateSlider({
+  Name = "Max cooldown after a FAR shot",
+  Range = { 0, 300 },
+  Increment = 10,
+  Suffix = " ms",
+  CurrentValue = v13 * 1000,
+  Flag = "farCooldownMs",
+  Callback = function(value4) v13 = value4 / 1000 end,
+})
+
+parryTab:CreateParagraph({
+  Title = "Info",
+  Content = "The real cooldown after a FAR shot is now dynamic: half the time-to-impact at the moment of firing (speed + distance combined), capped by this slider. Slow/far ball = cooldown near the cap. Fast/close ball = cooldown crushed down so it can retry fast. IsGameBusy() still applies on top either way.",
+})
+
+parryTab:CreateSection("Hold Macro")
+
+parryTab:CreateSlider({
+  Name = "Macro CPS",
+  Range = { 50, 300 },
+  Increment = 10,
+  Suffix = " CPS",
+  CurrentValue = macroCPS,
+  Flag = "macroCps",
+  Callback = function(value5) macroCPS = value5 end,
+})
+
+parryTab:CreateKeybind({
+  Name = "Macro Hold Key",
+  CurrentKeybind = "E",
+  HoldToInteract = true,
+  Flag = "macroKey",
+  Callback = function() end,
+})
+
+parryTab:CreateParagraph({
+  Title = "Macro",
+  Content = "Hold the assigned key to spam clicks at the configured CPS rate.",
+})
+
+visualsTab:CreateSection("Ball ESP")
+
+visualsTab:CreateToggle({
+  Name = "Ball ESP",
+  CurrentValue = v8,
+  Flag = "ballEsp",
+  Callback = function(value6)
+    v8 = value6
+
+    if not value6 then
+      f21()
+    else
+      f22()
+    end
+  end,
+})
+
+visualsTab:CreateKeybind({
+  Name = "Ball ESP Toggle Key",
+  CurrentKeybind = "F8",
+  HoldToInteract = false,
+  Flag = "ballEspKey",
+  Callback = function()
+    v8 = not v8
+    rayVoid:Notify({ Title = "Ball ESP", Content = v8 and "Enabled" or "Disabled", Duration = 2 })
+
+    if not v8 then
+      f21()
+    else
+      f22()
+    end
+  end,
+})
+
+visualsTab:CreateParagraph({
+  Title = "ESP Info",
+  Content = "Red = the ball is targeting you  |  Green = the ball is targeting someone else. Shows distance, speed, and a beam to the ball.",
+})
+
+statusTab:CreateSection("Live Status")
+local label = statusTab:CreateLabel("Waiting for a ball...", "activity")
+local label2 = statusTab:CreateLabel("", "zap")
+local label3 = statusTab:CreateLabel("", "shield")
+local label4 = statusTab:CreateLabel("", "settings")
+local label5 = statusTab:CreateLabel("", "eye")
+local label6 = statusTab:CreateLabel("", "wifi")
+
+userInputService.InputBegan:Connect(function(input, p11)
+  if p11 then
+    return
+  end
+
+  if input.KeyCode == Enum.KeyCode.E then
+    v9 = true
+    f4()
+  end
+end)
+
+userInputService.InputEnded:Connect(function(input2)
+  if input2.KeyCode == Enum.KeyCode.E then
+    f12()
+  end
+end)
+
+runService.Heartbeat:Connect(function()
+  local v50 = f7()
+
+  if not v50 then
+    label:Set("Smart Parry: " .. (v6 and "ON — waiting for a ball..." or "OFF"))
+    label2:Set("")
+    label3:Set("")
+    label4:Set("")
+    label5:Set("")
+    label6:Set(string.format("Ping: %.0fms", f2() * 1000))
+    return
+  else
+    local v51 = f5(v50)
+    local v52 = f14(v50)
+    local v53 = f9(v50)
+    local v54 = v52 <= 5 and "PANIC" or v52 <= 45 and "CLOSE" or "FAR"
+
+    if v53 then
+      local v55 = v51 > 0 and v52 / v51 or 0
+
+      label:Set(string.format(
+        "🎯 TARGETING YOU  [%s]  |  %.1f studs  |  %.0f spd  |  tth: %.2f", v54, v52, v51, v55
+      ))
+    else
+      label:Set(string.format("👁 Active  |  spd: %.0f  |  target: %s", v51, tostring(f3(v50))))
+    end
+
+    local v56 = count > 0 and count2 / count * 100 or 0
+
+    label2:Set(string.format(
+      "Parry: %s  |  Attempts: %d  |  Success: %d (%.0f%%)  |  Clash: %s", v11 and "CD" or "OK",
+      count, count2, v56, v14 and "SPAM" or "OFF"
+    ))
+
+    if v7 and v19 then
+      label3:Set(string.format(
+        "⚠️ CURVE DETECTED  |  Angle: %.1f°  |  Threshold: %.2f", v18, f16(v50)
+      ))
+    else
+      label3:Set(string.format("Curve: %.1f°  |  Threshold: %.2f", v18, f16(v50)))
+    end
+
+    label4:Set(string.format("Macro: %s  |  CPS: %d", v10 and "ACTIVE" or "OFF", macroCPS))
+
+    label5:Set(string.format(
+      "ESP: %s  |  Anti-Curve: %s  |  Smart Parry: %s", v8 and "ON" or "OFF",
+      v7 and "ON" or "OFF", v6 and "ON" or "OFF"
+    ))
+
+    label6:Set(string.format(
+      "Ping: %.0fms  |  Game busy: %s", f2() * 1000, f1() and "YES" or "no"
+    ))
+
+    return
+  end
+end)
+
+f22()
+
+rayVoid:LoadConfiguration()
+
+rayVoid:Notify({
+  Title = "Blade Ball Hub",
+  Message = "V2 loaded — flat 0.3s cooldown, no closing-speed timing",
+  Type = "success",
+  Duration = 4,
+})
